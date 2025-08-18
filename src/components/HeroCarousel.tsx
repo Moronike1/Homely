@@ -53,18 +53,11 @@ export default function HeroCarousel() {
                 Explore properties for rent, sale, and lease with ease.
               </p>
               <div className="flex gap-4">
-               <button
-  onClick={() => {
-    const section = document.getElementById("services");
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
-    }
-  }}
-  className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-md transition"
+               <a href="#hero-section" className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
 >
   Get Started
-</button>
-                <a href="#features" className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-md transition colors">
+</a>
+                <a href="#features" className="px-6 py-3 border border-emerald-600 text-emerald-600 font-semibold rounded-lg hover:bg-emerald-50 transition">
                   Learn More
                 </a>
               </div>
