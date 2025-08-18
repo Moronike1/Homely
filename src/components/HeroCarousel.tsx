@@ -1,6 +1,7 @@
 // src/components/HeroCarousel.tsx
 import { useEffect, useRef, useCallback, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
+import { motion } from 'framer-motion';
 
 const heroImages = [
   'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1920&q=80',
@@ -46,9 +47,13 @@ export default function HeroCarousel() {
           >
             <div className="absolute inset-0 bg-black bg-opacity-40"></div>
             <div className="relative z-10 h-full flex flex-col justify-center items-center text-white text-center px-4">
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              <motion.h1 
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-4xl md:text-6xl font-bold mb-4">
                 Find Your Dream Home with <span className="text-blue-300">Homely</span>
-              </h1>
+              </motion.h1>
               <p className="text-lg md:text-2xl mb-6">
                 Explore properties for rent, sale, and lease with ease.
               </p>

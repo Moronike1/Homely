@@ -1,6 +1,17 @@
 import heroImage from "../assets/hero image.jpg"; // change this to your actual image path
 import Hero from "../components/HeroCarousel"; // Assuming you have a Hero component for the hero section
 import FeaturesGrid from "../components/FeaturesGrid"; // Assuming you have a FeaturesGrid component for the features section
+import { motion } from "framer-motion"; // Importing motion for animations
+
+const container = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren:0.5, } },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 , transition: { duration: 0.6 } },
+};
 
 
 
@@ -14,35 +25,68 @@ export default function Home() {
 
       {/* Static Hero Section */}
       <section id="hero-section" className="py-16 text-center">
-      <div
+      <motion.div
+      variants={container}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
         className="h-[80vh] bg-cover bg-center relative flex items-center justify-center"
         style={{ backgroundImage: `url(${heroImage})` }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-50">
         <div className="relative z-10 text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+          <motion.h1
+          variants={item} className="text-4xl md:text-6xl font-bold text-white mb-4">
             Find Your Next Home with <span className="text-blue-300">Homely</span>
-          </h1>
-          <p className="text-lg md:text-2xl text-white mb-6">
+          </motion.h1>
+          <motion.p variants={item} className="text-lg md:text-2xl text-white mb-6">
             Discover rental, sales, and lease options across Nigeria.
-          </p>
+          </motion.p>
+          {/* Stagger container */}
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="visible"
+            viewport={{ once: true }}
+          >
           <div className="flex flex-wrap justify-center gap-4">
-            <a href="#rentals" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition">
+            <motion.a 
+            variants={item}
+            href="#rentals" 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition">
               Explore Rentals
-            </a>
-            <a href="#sales" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition">
+            </motion.a>
+            <motion.a 
+            variants={item}
+            href="#sales" 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition">
               Browse Properties
-            </a>
-            <a href="#lease" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition">
+            </motion.a>
+            <motion.a 
+             variants={item}
+            href="#lease" 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition">
               Lease Space
-            </a>
-            <a href="#facilities" className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition">
+            </motion.a>
+            <motion.a 
+             variants={item}
+            href="#facilities" 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition">
               Manage Facilities
-            </a>
+            </motion.a>
           </div>
+          </motion.div>
         </div>
       </div>
-      </div>
+      </motion.div>
       </section>
 
       <section id="features" className="py-16 bg-emerald-50 scroll-mt-20">
