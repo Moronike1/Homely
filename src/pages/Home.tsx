@@ -1,11 +1,15 @@
 import heroImage from "../assets/hero image.jpg"; // change this to your actual image path
 import Hero from "../components/HeroCarousel"; // Assuming you have a Hero component for the hero section
-import FeaturesGrid from "../components/FeaturesGrid"; // Assuming you have a FeaturesGrid component for the features section
+import FeaturesGrid from "../components/FeaturesGrid"; // Assuming you have a FeaturesGrid component for the 
+// features section
+import HowItWorks from "../components/HowItWorks"; // Importing the HowItWorks component
+import Testimonials from "../components/Testimonials"; // Importing the Testimonials component
+import CallToAction from "../components/CallToAction"; // Importing the CallToAction component
 import { motion } from "framer-motion"; // Importing motion for animations
 
 const container = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren:0.5, } },
+  visible: { opacity: 1, transition: { staggerChildren:0.5, }, },
 };
 
 const item = {
@@ -126,7 +130,7 @@ export default function Home() {
 </section>
 
 {/* Call to Action Section */}
-<section className="py-20 bg-emerald-800 text-white text-center">
+<section className="py-8 bg-emerald-800 text-white text-center">
   <h2 className="text-3xl md:text-4xl font-bold mb-6">
     Ready to Find Your Next Home?
   </h2>
@@ -143,13 +147,20 @@ export default function Home() {
 
 
       {/* Optional Extra Section Below */}
-      <div className="text-center py-12 px-4 bg-white">
+      <section className="text-center py-12 px-4 bg-white">
        
 
         <FeaturesGrid />
       {/* Features Section */}
+    </section>
+     
+       <HowItWorks />
+     {/* How It Works Section */}
 
-      </div>
+     < Testimonials />
+      {/* Testimonials Section */}
+
+      <CallToAction />
     </div>
 
     
