@@ -5,6 +5,7 @@ import Sales from "./pages/Sales";
 import Lease from "./pages/Lease";
 import Facility from "./pages/Facility";
 import Navbar from "./components/Navbar";
+import BackToTop from "./components/BackToTop"
 
 function App() {
   return (
@@ -19,7 +20,9 @@ function App() {
         <Route path="/facility-management" element={<Facility />} />
       </Routes>
     </div>
+    <BackToTop />
     </BrowserRouter>
+    
   );
 }
 

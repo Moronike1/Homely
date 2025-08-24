@@ -6,6 +6,7 @@ import HowItWorks from "../components/HowItWorks"; // Importing the HowItWorks c
 import Testimonials from "../components/Testimonials"; // Importing the Testimonials component
 import CallToAction from "../components/CallToAction"; // Importing the CallToAction component
 import { motion } from "framer-motion"; // Importing motion for animations
+import Footer from "../components/footer"; // Importing the Footer component
 
 const container = {
   hidden: { opacity: 0 },
@@ -161,6 +162,10 @@ export default function Home() {
       {/* Testimonials Section */}
 
       <CallToAction />
+      {/* Final Call to Action Section */}
+
+      <Footer />
+
     </div>
 
     
