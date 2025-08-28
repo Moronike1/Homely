@@ -3,6 +3,7 @@ import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
 import logo from "../assets/Logo.png"; // Adjust the path as necessary
+import { Link } from "react-router-dom"; // Add this import if using react-router-dom
 
 export default function Footer() {
   const [email, setEmail] = useState("");
@@ -33,7 +34,10 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 grid gap-10 md:grid-cols-5">
         {/* Brand / About */}
         <div className="md:col-span-2">
-          <h3 className="text-2xl font-bold">Homely</h3>
+          <Link to="/" className="flex items-center gap-2 text-2xl font-bold text-blue-600">
+  <img src={logo} alt="Homely Logo" className="h-10 w-auto hover: opacity-80 transition" />
+  
+</Link>
           <p className="mt-4 text-gray-300 text-sm leading-relaxed">
             Your trusted partner for rentals, sales, lease, and facility
             management. Making real estate seamless, transparent, and secure.

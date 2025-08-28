@@ -1,55 +1,75 @@
-// src/components/CallToAction.tsx
-import { motion } from "framer-motion";
+"use client";
 
-export default function CallToAction() {
+import { useState } from "react";
+
+export default function CTA() {
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    console.log("Submitting email:", email); //log
+
+    try {
+      const res = await fetch("http://localhost:5000/subscribe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+     
+
+      console.log("Raw response:", res);
+
+       const data = await res.json();
+      console.log("Backend response data:", data);
+
+      if (res.ok) {
+        setMessage(data.message || "Subscription successful!");
+        setEmail("");
+      } else {
+        setMessage(`❌ ${data.message || data.error || "Unknown error."}`); // Improved error handling
+      }
+    } catch (error) {
+      console.error(error);
+      setMessage("⚠️ Something went wrong. Try again.");
+    }
+  };
+
   return (
-    <section className="relative bg-emerald-700 py-20 text-white overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 text-center">
-        {/* Heading */}
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-3xl md:text-4xl font-bold mb-6"
+    <section className="bg-gray-900 text-white py-16 px-6 text-center">
+      <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        Stay updated with Homely 🚀
+      </h2>
+      <p className="mb-6 text-gray-300">
+        Subscribe to our newsletter and never miss an update.
+      </p>
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col md:flex-row items-center justify-center gap-4 max-w-lg mx-auto"
+      >
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your email"
+          required
+          className="w-full md:w-auto flex-1 px-4 py-3 rounded-2xl text-black outline-none"
+        />
+        <button
+          type="submit"
+          className="bg-lime-500 hover:bg-lime-600 text-black px-6 py-3 rounded-2xl font-semibold shadow-lg"
         >
-          Ready to Find Your Next Home?
-        </motion.h2>
+          Subscribe
+        </button>
+      </form>
 
-        {/* Subtext */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          viewport={{ once: true }}
-          className="text-lg text-emerald-100 mb-10"
-        >
-          Join thousands of renters, landlords, and investors using Homely to
-          rent, buy, lease, or manage properties with confidence.
-        </motion.p>
-
-        {/* Buttons */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="flex flex-col sm:flex-row justify-center gap-4"
-        >
-          <a
-            href="#"
-            className="px-6 py-3 rounded-xl bg-white text-emerald-700 font-semibold shadow hover:scale-105 transition"
-          >
-            Get Started
-          </a>
-          <a
-            href="#"
-            className="px-6 py-3 rounded-xl bg-emerald-600 border border-emerald-300 text-white font-semibold hover:bg-emerald-800 hover:scale-105 transition"
-          >
-            Learn More
-          </a>
-        </motion.div>
-      </div>
+      {message && (
+        <p className="mt-4 text-sm text-lime-400 font-medium">{message}</p>
+      )}
     </section>
   );
 }
