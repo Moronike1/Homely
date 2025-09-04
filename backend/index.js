@@ -25,20 +25,47 @@ app.post("/subscribe", async (req, res) => {
     console.log("Incoming email:", email);
 
     if (!email) {
-      return res.status(400).json({ error: "Email is required" });
+      return res.status(400).json({ success: false, message: "Email is required" });
     }
 
     if (subscribers.includes(email)) {
-      return res.status(400).json({ error: "This email is already subscribed." });
+      return res.status(400).json({ success: false, message: "This email is already subscribed." });
     }
 
     subscribers.push(email);
 
-    return res.status(200).json({ message: "Subscription successful!" });
+    return res.status(200).json({ success: true, message: "Subscription successful!" });
   } catch (err) {
     console.error("🔥 Error subscribing:", err);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
+});
+
+// Sample properties (in-memory)
+let properties = [
+  {
+    id: 1,
+    title: "3-Bedroom Apartment in Lekki",
+    description: "Spacious apartment with modern facilities.",
+    price: 4500000,
+    location: "Lekki, Lagos",
+    type: "rent",
+    images: ["https://via.placeholder.com/300x200"]
+  },
+  {
+    id: 2,
+    title: "Luxury Duplex in Ikoyi",
+    description: "Elegant 5-bedroom duplex with pool.",
+    price: 250000000,
+    location: "Ikoyi, Lagos",
+    type: "sale",
+    images: ["https://via.placeholder.com/300x200"]
+  }
+];
+
+// Route to fetch all properties
+app.get("/properties", (req, res) => {
+  res.json(properties);
 });
 
 // Start server
