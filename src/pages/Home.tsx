@@ -164,7 +164,6 @@ export default function Home() {
       <CallToAction />
       {/* Final Call to Action Section */}
 
-      <Footer />
 
     </div>
 

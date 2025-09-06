@@ -7,6 +7,7 @@ const heroImages = [
   'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1920&q=80',
   'https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1920&q=80',
   'https://images.unsplash.com/photo-1599423300746-b62533397364?auto=format&fit=crop&w=1920&q=80',
+  '../assets/Homely Banner.png'
 ];
 
 export default function HeroCarousel() {
