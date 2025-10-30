@@ -6,14 +6,19 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "seed": "node seed.js",
+    "reseed": "node reseed.js"
   },
+  "author": "Moronike O. Elijah",
   "dependencies": {
+    "@faker-js/faker": "^10.0.0",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
+    "express": "^4.21.2",
     "mongodb": "^6.19.0",
+    "mongoose": "^8.18.1",
     "nodemailer": "^7.0.6"
   }
 }

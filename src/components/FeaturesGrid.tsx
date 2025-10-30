@@ -26,7 +26,7 @@ export default function FeaturesGrid() {
   ];
 
   return (
-    <section id="features" className="py-20 bg-gray-50">
+    <section id="features" className="py-12 bg-gray-50">
       <div className="max-w-6xl mx-auto px-6">
         <motion.h2
           className="text-3xl font-bold text-center text-emerald-800 mb-12"

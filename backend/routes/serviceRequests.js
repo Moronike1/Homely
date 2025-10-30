@@ -35,4 +35,46 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET all service requests
+router.get("/", async (req, res) => {
+  try {
+    const requests = await ServiceRequest.find();
+    res.json(requests);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+/// PUT: Update service request status
+router.put("/:id/status", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    // validate status
+   const validStatuses = ["pending", "in-progress", "completed"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: "❌ Invalid status value" });
+    }
+
+    const updatedRequest = await ServiceRequest.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedRequest) {
+      return res.status(404).json({ error: "❌ Service request not found" });
+    }
+
+    res.json({ message: "✅ Status updated successfully!", request: updatedRequest });
+  } catch (error) {
+    console.error("Error updating service request status:", error);
+    res.status(500).json({ error: "❌ Failed to update status" });
+  }
+});
+
+
 export default router;

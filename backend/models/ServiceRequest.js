@@ -11,15 +11,15 @@ const serviceRequestSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: true,
+    default: "N/A",   // 👈 Default if not provided
   },
   serviceType: {
     type: String,
-    required: true,
+    default: "General",  // 👈 Default if not provided
   },
   description: {
     type: String,
-    required: true,
+    default: "No description provided", // 👈 Default if not provided
   },
   status: {
     type: String,

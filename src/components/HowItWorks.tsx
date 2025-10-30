@@ -37,7 +37,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="py-20 bg-gray-50">
+    <section id="how-it-works" className="py-12 bg-gray-50">
       <div className="max-w-6xl mx-auto px-6 text-center">
         {/* Headline */}
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">

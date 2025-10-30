@@ -41,6 +41,7 @@ export default function Navbar() {
           <Link to="/sales" onClick={toggleMenu}>Sales</Link><br />
           <Link to="/lease" onClick={toggleMenu}>Lease</Link><br />
           <Link to="/facility-management" onClick={toggleMenu}>Facility Management</Link>
+          <Link to="/properties" onClick={toggleMenu}>Properties</Link>
         </div>
       )}
     </nav>

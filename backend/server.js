@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import fs from "fs";
-
+// Example model (adjust schema to match your seeded data)
+import Property from "./models/Property.js";
 const app = express();
 const PORT = 5000;
 
@@ -24,6 +25,25 @@ app.post("/api/subscribe", (req, res) => {
   res.json({ success: true, message: "Email saved successfully" });
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+// Route to fetch all properties
+app.get("/api/properties", async (req, res) => {
+  try {
+    const properties = await Property.find();
+    res.json(properties);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching properties", error: err });
+  }
 });
+
+// ✅ Connect to MongoDB
+mongoose
+  .connect("mongodb://127.0.0.1:27017/homely", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("MongoDB error:", err));
+
+// Start server
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+

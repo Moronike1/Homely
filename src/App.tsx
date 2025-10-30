@@ -7,29 +7,37 @@ import Facility from "./pages/Facility";
 import Navbar from "./components/Navbar";
 import BackToTop from "./components/BackToTop";
 import Footer from "./components/Footer";
+import ServiceRequestsPage from "./pages/ServiceRequestsPage";
+import Admin from "./pages/Admin";
+import Properties from "./pages/Properties";
+import PropertyDetails from "./pages/PropertyDetails";
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="flex flex-col min-h-screen">
-        {/* Navbar always on top */}
+      <div className="flex flex-col min-h-screen bg-gray-50">
+        {/* Navbar */}
         <Navbar />
 
-        {/* Main content */}
-        <main className="flex-grow p-6">
+        {/* Main Content */}
+        <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/rent" element={<Rent />} />
             <Route path="/sales" element={<Sales />} />
             <Route path="/lease" element={<Lease />} />
             <Route path="/facility-management" element={<Facility />} />
+            <Route path="/service-requests" element={<ServiceRequestsPage />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/properties" element={<Properties />} />
+            <Route path="/properties/:id" element={<PropertyDetails />} />
           </Routes>
         </main>
 
-        {/* Footer stays at the bottom */}
+        {/* Footer */}
         <Footer />
 
-        {/* Back to top button floats, not in layout flow */}
+        {/* Floating Back to Top Button */}
         <BackToTop />
       </div>
     </BrowserRouter>

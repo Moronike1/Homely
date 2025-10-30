@@ -38,7 +38,7 @@ export default function HeroCarousel() {
   }, [emblaApi, autoplay]);
 
   return (
-    <div className="relative h-[80vh] w-full overflow-hidden" ref={emblaRef}>
+    <div className="relative w-screen h-[80vh] w-full overflow-hidden" ref={emblaRef}>
       <div className="flex h-full">
         {heroImages.map((src, index) => (
           <div
