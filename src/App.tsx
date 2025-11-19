@@ -15,12 +15,12 @@ import PropertyDetails from "./pages/PropertyDetails";
 function App() {
   return (
     <BrowserRouter>
-      <div className="flex flex-col min-h-screen bg-gray-50">
-        {/* Navbar */}
+      <div className="flex flex-col min-h-screen">
+        {/* Navbar always on top */}
         <Navbar />
 
-        {/* Main Content */}
-        <main className="flex-grow">
+        {/* Main content */}
+        <main className="flex-grow p-6">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/rent" element={<Rent />} />
@@ -30,14 +30,14 @@ function App() {
             <Route path="/service-requests" element={<ServiceRequestsPage />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/properties" element={<Properties />} />
-            <Route path="/properties/:id" element={<PropertyDetails />} />
+            <Route path="/property/:id" element={<PropertyDetails />} />
           </Routes>
         </main>
 
-        {/* Footer */}
+        {/* Footer stays at the bottom */}
         <Footer />
 
-        {/* Floating Back to Top Button */}
+        {/* Back to top button floats, not in layout flow */}
         <BackToTop />
       </div>
     </BrowserRouter>

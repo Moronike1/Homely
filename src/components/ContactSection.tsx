@@ -1,4 +1,6 @@
 import React from "react";
+import axios from "axios";
+import { API_BASE_URL } from "../config/apiConfig";
 
 const ContactSection = () => {
   return (
@@ -10,7 +12,7 @@ const ContactSection = () => {
         </p>
         <a
           href="mailto:info@homely.com"
-          className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+          className="inline-block bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
         >
           Send Us an Email
         </a>

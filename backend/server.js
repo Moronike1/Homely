@@ -1,17 +1,30 @@
+// backend/server.js
 import express from "express";
 import cors from "cors";
+import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import fs from "fs";
-// Example model (adjust schema to match your seeded data)
-import Property from "./models/Property.js";
-const app = express();
-const PORT = 5000;
+import dotenv from "dotenv";
 
-// Middleware
+// Import route files
+import propertyRoutes from "./routes/propertyRoutes.js";
+import serviceRequestRoutes from "./routes/serviceRequests.js";
+import userRoutes from "./routes/users.js";
+
+// Import models (optional, if used elsewhere)
+import Property from "./models/Property.js";
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// 🧩 Middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
-// Endpoint to save emails
+// 📨 Subscription route (for newsletter or contact form)
 app.post("/api/subscribe", (req, res) => {
   const { email } = req.body;
 
@@ -19,31 +32,37 @@ app.post("/api/subscribe", (req, res) => {
     return res.status(400).json({ success: false, message: "Invalid email" });
   }
 
-  // Save email to a text file (later you can connect DB)
-  fs.appendFileSync("subscribers.txt", email + "\n");
-
-  res.json({ success: true, message: "Email saved successfully" });
-});
-
-// Route to fetch all properties
-app.get("/api/properties", async (req, res) => {
   try {
-    const properties = await Property.find();
-    res.json(properties);
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching properties", error: err });
+    fs.appendFileSync("subscribers.txt", email + "\n");
+    res.json({ success: true, message: "✅ Email saved successfully" });
+  } catch (error) {
+    console.error("Error saving email:", error);
+    res.status(500).json({ success: false, message: "❌ Failed to save email" });
   }
 });
 
-// ✅ Connect to MongoDB
-mongoose
-  .connect("mongodb://127.0.0.1:27017/homely", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB error:", err));
+// 🏡 Property Routes
+app.use("/api/properties", propertyRoutes);
 
-// Start server
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// 🧰 Service Request Routes
+app.use("/api/service-requests", serviceRequestRoutes);
+
+// 👤 User Routes
+app.use("/api/users", userRoutes);
+
+// ✅ MongoDB Connection
+mongoose
+  .connect(process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/homely")
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
+
+
+// Root route
+app.get("/", (req, res) => {
+  res.send("Homely Backend is running successfully...!");
+});
+
+// 🚀 Start Server
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
 
