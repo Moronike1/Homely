@@ -1,5 +1,3 @@
-// src/components/FeaturedProperties.tsx
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -7,27 +5,40 @@ import { getProperties } from "../api/propertyService";
 
 export default function FeaturedProperties() {
   const [featured, setFeatured] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const load = async () => {
       const data = await getProperties();
-
-      // Pick first 3 and ensure image exists
-      const cleaned = data
-        .filter((p) => p.image || (p.gallery && p.gallery.length > 0))
-        .slice(0, 3);
-
-      setFeatured(cleaned);
+      setFeatured(data.slice(0, 3));
+      setLoading(false);
+      console.log("FEATURED RAW:", data);
     };
-
-    fetchData();
+    load();
   }, []);
+
+  console.log("FEATURED FINAL:", featured);
+
+
+  if (loading) {
+    return (
+      <section className="text-center py-10">
+        <p className="text-gray-500">Loading featured properties...</p>
+      </section>
+    );
+  }
+
+  if (!featured || featured.length === 0) {
+    return (
+      <section className="text-center py-10">
+        <p className="text-gray-500">No featured properties available.</p>
+      </section>
+    );
+  }
 
   return (
     <section>
       <div className="max-w-7xl mx-auto px-6 md:px-10">
-
-        {/* Heading */}
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -38,12 +49,7 @@ export default function FeaturedProperties() {
           Featured <span className="text-emerald-600">Properties</span>
         </motion.h2>
 
-        {/* Grid */}
         <div className="grid gap-10 md:gap-12 md:grid-cols-2 lg:grid-cols-3">
-          {featured.length === 0 && (
-            <p className="text-center text-gray-500">No featured properties yet.</p>
-          )}
-
           {featured.map((property, index) => (
             <motion.div
               key={property.id}
@@ -74,8 +80,8 @@ export default function FeaturedProperties() {
                   </p>
 
                   <div className="flex justify-between text-sm text-gray-500">
-                    <span>{property.type || "—"}</span>
-                    <span>{property.status || "Available"}</span>
+                    <span>{property.type}</span>
+                    <span>{property.status}</span>
                   </div>
                 </div>
               </Link>

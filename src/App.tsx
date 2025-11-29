@@ -10,7 +10,7 @@ import Footer from "./components/Footer";
 import ServiceRequestsPage from "./pages/ServiceRequestsPage";
 import Admin from "./pages/Admin";
 import Properties from "./pages/Properties";
-import PropertyDetails from "./pages/PropertyDetails";
+import PropertyDetails from "./components/PropertyDetails";
 
 function App() {
   return (
@@ -33,6 +33,8 @@ function App() {
             <Route path="/property/:id" element={<PropertyDetails />} />
           </Routes>
         </main>
+
+      
 
         {/* Footer stays at the bottom */}
         <Footer />
