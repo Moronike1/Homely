@@ -8,108 +8,149 @@ export default function PropertyDetails() {
   const { id } = useParams();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [openLightbox, setOpenLightbox] = useState(false);
 
+  const [openLightbox, setOpenLightbox] = useState(false);
+  const [mainImageIndex, setMainImageIndex] = useState(0);
+  const agentNumber = "2347034609530";   // Your phone number without the "+"
+
+
+  // Load property details
   useEffect(() => {
     const load = async () => {
       if (!id) {
         setLoading(false);
         return;
       }
+
       const data = await getPropertyById(id);
       setProperty(data);
       setLoading(false);
+
+      // Reset main image when page loads
+      setMainImageIndex(0);
     };
+
     load();
   }, [id]);
 
-  if (loading) return null;
+  if (loading) return <div className="text-center py-10">Loading...</div>;
 
-  if (!property) {
+  if (!property)
     return (
-      <div className="text-center py-10 text-gray-500">
-        Property not found.
+      <div className="text-center py-10">
+        <p className="text-gray-500">Property not found.</p>
       </div>
     );
-  }
 
   const gallery = property.gallery || [];
 
+  // Determine the currently displayed main image
+  const mainImage =
+    gallery.length > 0 ? gallery[mainImageIndex] : property.image;
+
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10">
-      
-      {/* Back */}
-      <Link to="/" className="text-blue-600 hover:underline mb-6 inline-block">
+    <div className="max-w-5xl mx-auto p-6">
+
+      {/* Back Button */}
+      <Link to="/" className="text-blue-600 hover:underline block mb-4">
         ← Back to Properties
       </Link>
 
-      {/* Main Image */}
-      <div className="w-full h-80 md:h-96 rounded-2xl overflow-hidden shadow-md mb-8">
-        <img
-          src={property.image || gallery[0]}
-          alt={property.title}
-          className="w-full h-full object-cover cursor-pointer"
-          onClick={() => setOpenLightbox(true)}
-        />
-      </div>
+      {/* Main Container */}
+      <div className="bg-white rounded-xl shadow-md overflow-hidden p-4">
 
-      {/* Title, Location, Price */}
-      <div className="bg-white rounded-2xl shadow-md p-6 mb-8">
-        <h1 className="text-3xl font-bold mb-2 text-gray-800">
-          {property.title}
-        </h1>
+        {/* Main Image */}
+        <div className="w-full h-80 rounded-xl overflow-hidden mb-4">
+          <img
+            src={mainImage}
+            alt={property.title}
+            className="w-full h-full object-cover cursor-pointer"
+            onClick={() => setOpenLightbox(true)}
+          />
+        </div>
 
-        <p className="text-gray-600 mb-3 text-lg">
-          {property.location}
-        </p>
+        {/* Thumbnails */}
+        {gallery.length > 0 && (
+          <div className="grid grid-cols-4 gap-3 mb-6">
+            {gallery.map((img, idx) => (
+              <div
+                key={idx}
+                onClick={() => setMainImageIndex(idx)}
+                className={`cursor-pointer rounded-lg overflow-hidden border 
+                  ${
+                    mainImageIndex === idx
+                      ? "border-emerald-600 border-2"
+                      : "border-gray-300"
+                  }`}
+              >
+                <img
+                  src={img}
+                  alt="thumbnail"
+                  className="h-24 w-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        )}
 
-        <p className="text-blue-700 text-2xl font-semibold mb-6">
+        {/* Property Info */}
+        <h1 className="text-2xl font-bold mb-2">{property.title}</h1>
+        <p className="text-gray-600 mb-3">{property.location}</p>
+
+        <p className="text-blue-700 text-xl font-semibold mb-4">
           ₦{property.price.toLocaleString()}
         </p>
 
+        {/* Features */}
         <div className="grid grid-cols-2 gap-4 text-sm mb-6">
           <div className="p-3 bg-gray-100 rounded-xl">
             <span className="font-semibold">Type:</span> {property.type}
           </div>
+
           <div className="p-3 bg-gray-100 rounded-xl">
             <span className="font-semibold">Status:</span> {property.status}
           </div>
         </div>
 
-        <p className="text-gray-700 leading-relaxed text-md">
+        {/* Description */}
+        <p className="text-gray-700 leading-relaxed mb-6">
           {property.description}
         </p>
+
+        {/* Contact Agent Section */}
+<div className="mt-6 flex flex-col sm:flex-row gap-4">
+
+  {/* WhatsApp Button */}
+  <a
+    href={`https://wa.me/${agentNumber}?text=Hello, I am interested in the property titled "${property.title}"`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex-1 bg-green-600 text-white py-3 rounded-xl text-center font-semibold"
+  >
+    WhatsApp Agent
+  </a>
+
+  {/* Call Button */}
+  <a
+    href={`tel:${agentNumber}`}
+    className="flex-1 bg-blue-600 text-white py-3 rounded-xl text-center font-semibold"
+  >
+    Call Agent
+  </a>
+
+</div>
+
+
+        {/* Lightbox */}
+        {openLightbox && gallery.length > 0 && (
+          <Lightbox
+            open={true}
+            close={() => setOpenLightbox(false)}
+            slides={gallery.map((url) => ({ src: url }))}
+            index={mainImageIndex}
+          />
+        )}
       </div>
-
-      {/* Gallery Section */}
-      {gallery.length > 1 && (
-        <div className="bg-white rounded-2xl shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">
-            More Images
-          </h2>
-
-          <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
-            {gallery.map((img, i) => (
-              <img
-                key={i}
-                src={img}
-                alt=""
-                className="w-full h-28 object-cover rounded-xl cursor-pointer border"
-                onClick={() => setOpenLightbox(true)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Lightbox */}
-      {openLightbox && gallery.length > 0 && (
-        <Lightbox
-          open={true}
-          close={() => setOpenLightbox(false)}
-          slides={gallery.map((url) => ({ src: url }))}
-        />
-      )}
     </div>
   );
 }

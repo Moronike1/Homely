@@ -10,8 +10,19 @@ export default {
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
+  			sm: 'calc(var(--radius) - 4px)',	
+
   		},
+
+		animation: {
+  pulseSoft: "pulseSoft 2s infinite",
+},
+keyframes: {
+  pulseSoft: {
+    "0%, 100%": { transform: "scale(1)" },
+    "50%": { transform: "scale(1.08)" },
+  },
+},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
