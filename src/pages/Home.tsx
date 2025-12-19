@@ -1,5 +1,7 @@
 // src/pages/Home.tsx
 import { motion } from "framer-motion";
+import { useState } from "react";
+
 import HeroCarousel from "../components/HeroCarousel";
 import FeaturedProperties from "../components/FeaturedProperties";
 import AboutSection from "../components/AboutSection";
@@ -8,11 +10,25 @@ import TestimonialsSection from "../components/TestimonialsSection";
 import ContactSection from "../components/ContactSection";
 
 export default function Home() {
+  const [search, setSearch] = useState("");
+
   return (
     <div className="flex flex-col w-full overflow-hidden">
+
       {/* Hero Section */}
       <section id="hero" className="w-full">
         <HeroCarousel />
+
+        {/* Search bar under hero */}
+        <div className="max-w-3xl mx-auto mt-6 px-6">
+          <input
+            type="text"
+            placeholder="Search location, type, price..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full p-4 rounded-xl border border-gray-300 shadow-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+          />
+        </div>
       </section>
 
       {/* Featured Properties */}
@@ -24,7 +40,7 @@ export default function Home() {
           viewport={{ once: true }}
           className="max-w-7xl mx-auto px-6 md:px-10"
         >
-          <FeaturedProperties />
+          <FeaturedProperties search={search} />
         </motion.div>
       </section>
 

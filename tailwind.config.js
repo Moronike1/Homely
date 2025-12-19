@@ -13,6 +13,12 @@ export default {
   			sm: 'calc(var(--radius) - 4px)',	
 
   		},
+		boxShadow: {
+  glowGreen: "0 0 15px rgba(16,185,129,0.7)",
+  glowBlue: "0 0 15px rgba(59,130,246,0.7)",
+  glowPurple: "0 0 15px rgba(147,51,234,0.7)",
+},
+
 
 		animation: {
   pulseSoft: "pulseSoft 2s infinite",

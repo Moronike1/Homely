@@ -1,186 +1,206 @@
 // src/pages/Properties.tsx
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import PropertyList from "../components/PropertyList";
 
-interface Property {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  location: string;
-  type: string;
-  bedrooms: number;
-  bathrooms: number;
-  image: string;
-  created_at?: string;
-}
+export default function Properties() {
+  const [allProperties, setAllProperties] = useState([]);
+  const [filtered, setFiltered] = useState([]);
 
-const Properties: React.FC = () => {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<string>("all");
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [sortOption, setSortOption] = useState<string>("newest");
+  // Filter States
+  const [location, setLocation] = useState("");
+  const [type, setType] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [bedrooms, setBedrooms] = useState("");
+  const [bathrooms, setBathrooms] = useState("");
+  const ITEMS_PER_PAGE = 6;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState("");
 
-  // 🧠 Fetch properties with filtering, search, and sorting
-  const fetchProperties = async (type?: string, search?: string) => {
-    setLoading(true);
-    try {
-      let query = supabase.from("properties").select("*");
 
-      if (type && type !== "all") {
-        query = query.eq("type", type);
-      }
 
-      if (search && search.trim() !== "") {
-        query = query.or(
-          `title.ilike.%${search}%,description.ilike.%${search}%,location.ilike.%${search}%`
-        );
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-
-      let sortedData = [...(data || [])];
-
-      // 🧮 Apply sorting logic
-      switch (sortOption) {
-        case "lowToHigh":
-          sortedData.sort((a, b) => a.price - b.price);
-          break;
-        case "highToLow":
-          sortedData.sort((a, b) => b.price - a.price);
-          break;
-        case "aToZ":
-          sortedData.sort((a, b) => a.title.localeCompare(b.title));
-          break;
-        default:
-          // newest first by created_at
-          sortedData.sort(
-            (a, b) =>
-              new Date(b.created_at || "").getTime() -
-              new Date(a.created_at || "").getTime()
-          );
-          break;
-      }
-
-      setProperties(sortedData);
-    } catch (err) {
-      console.error("Error fetching properties:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Read search query from URL
+  const url = useLocation();
+  const params = new URLSearchParams(url.search);
+  const searchQuery = params.get("search")?.toLowerCase().trim() || "";
 
   useEffect(() => {
-    fetchProperties(filter, searchTerm);
-  }, [filter, searchTerm, sortOption]);
+    loadProperties();
+  }, []);
+
+  async function loadProperties() {
+    const { data, error } = await supabase.from("properties").select("*");
+
+    if (!error) {
+      setAllProperties(data);
+      applyFilters(data, searchQuery);
+    }
+  }
+
+
+  function applyFilters(source = allProperties, searchTerm = searchQuery) {
+    let result = [...source];
+
+    // Global Search
+    if (searchTerm !== "") {
+      result = result.filter((p) =>
+        p.title.toLowerCase().includes(searchTerm) ||
+        p.location.toLowerCase().includes(searchTerm) ||
+        p.type.toLowerCase().includes(searchTerm) ||
+        p.description.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Location Filter
+    if (location.trim() !== "") {
+      result = result.filter((p) =>
+        p.location.toLowerCase().includes(location.toLowerCase())
+      );
+    }
+
+    // Type Filter
+    if (type !== "") {
+      result = result.filter((p) => p.type === type);
+    }
+
+    // Price Filters
+    if (minPrice !== "") {
+      result = result.filter((p) => p.price >= Number(minPrice));
+    }
+    if (maxPrice !== "") {
+      result = result.filter((p) => p.price <= Number(maxPrice));
+    }
+
+    // Bedrooms Filter
+    if (bedrooms !== "") {
+      result = result.filter((p) => Number(p.bedrooms) === Number(bedrooms));
+    }
+
+    // Bathrooms Filter
+    if (bathrooms !== "") {
+      result = result.filter((p) => Number(p.bathrooms) === Number(bathrooms));
+    }
+
+if (sortBy === "newest") {
+  result.sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+}
+
+if (sortBy === "price_low") {
+  result.sort((a, b) => a.price - b.price);
+}
+
+if (sortBy === "price_high") {
+  result.sort((a, b) => b.price - a.price);
+}
+
+    setFiltered(result);
+    setCurrentPage(1);
+
+  }
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+
+const paginatedProperties = filtered.slice(
+  (currentPage - 1) * ITEMS_PER_PAGE,
+  currentPage * ITEMS_PER_PAGE
+);
+
 
   return (
-    <div className="bg-gray-50 min-h-screen py-12">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Page Header */}
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-10">
-          Explore Our Properties
-        </h1>
+    <div className="pt-20 px-6 max-w-7xl mx-auto">
 
-        {/* 🔍 Search, Filter, and Sort Controls */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-10">
-          {/* Search Input */}
-          <input
-            type="text"
-            placeholder="Search by title, location, or description..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-          />
+      <h1 className="text-3xl font-bold text-emerald-700 mb-8 text-center">
+        Browse Properties
+      </h1>
 
-          {/* Filter Buttons */}
-          <div className="flex flex-wrap justify-center gap-2">
-            {["all", "rent", "sale", "lease"].map((type) => (
-              <button
-                key={type}
-                onClick={() => setFilter(type)}
-                className={`px-5 py-2 rounded-lg border transition-all duration-300 ${
-                  filter === type
-                    ? "bg-emerald-600 text-white shadow-md"
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                }`}
-              >
-                {type === "all"
-                  ? "All"
-                  : type.charAt(0).toUpperCase() + type.slice(1)}
-              </button>
-            ))}
-          </div>
+      {/* Filters Section */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
 
-          {/* 🧮 Sort Dropdown */}
-          <select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-          >
-            <option value="newest">Newest Listings</option>
-            <option value="lowToHigh">Price: Low to High</option>
-            <option value="highToLow">Price: High to Low</option>
-            <option value="aToZ">Title: A–Z</option>
-          </select>
-        </div>
+        <input
+          placeholder="Location"
+          className="border p-3 rounded"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+        />
 
-        {/* Loading or Properties Display */}
-        {loading ? (
-          <p className="text-center text-gray-500">Loading properties...</p>
-        ) : properties.length === 0 ? (
-          <p className="text-center text-gray-500">
-            No properties found matching your search.
-          </p>
-        ) : (
-          /* Property Grid */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {properties.map((property) => (
-              <div
-                key={property.id}
-                className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300"
-              >
-                <img
-                  src={property.image}
-                  alt={property.title}
-                  className="h-56 w-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src =
-                      "https://via.placeholder.com/400x300?text=No+Image";
-                  }}
-                />
-                <div className="p-5">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-1">
-                    {property.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                    {property.description}
-                  </p>
-                  <p className="text-blue-600 font-semibold mb-2">
-                    ₦{property.price.toLocaleString()}
-                  </p>
-                  <p className="text-gray-500 text-sm mb-4">
-                    {property.location} • {property.bedrooms} Beds •{" "}
-                    {property.bathrooms} Baths
-                  </p>
-                  <Link
-                    to={`/properties/${property.id}`}
-                    className="block text-center bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition"
-                  >
-                    View Details
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <select
+          className="border p-3 rounded"
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+        >
+          <option value="">Type</option>
+          <option value="rent">Rent</option>
+          <option value="sale">Sale</option>
+          <option value="lease">Lease</option>
+        </select>
+
+        <input
+          placeholder="Min Price"
+          className="border p-3 rounded"
+          value={minPrice}
+          onChange={(e) => setMinPrice(e.target.value)}
+        />
+
+        <input
+          placeholder="Max Price"
+          className="border p-3 rounded"
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(e.target.value)}
+        />
+
+        <select
+          className="border p-3 rounded"
+          value={bedrooms}
+          onChange={(e) => setBedrooms(e.target.value)}
+        >
+          <option value="">Bedrooms</option>
+          <option value="1">1 Bedroom</option>
+          <option value="2">2 Bedrooms</option>
+          <option value="3">3 Bedrooms</option>
+          <option value="4">4 Bedrooms</option>
+          <option value="5">5 Bedrooms</option>
+        </select>
+
+        <select
+          className="border p-3 rounded"
+          value={bathrooms}
+          onChange={(e) => setBathrooms(e.target.value)}
+        >
+          <option value="">Bathrooms</option>
+          <option value="1">1 Bathroom</option>
+          <option value="2">2 Bathrooms</option>
+          <option value="3">3 Bathrooms</option>
+          <option value="4">4 Bathrooms</option>
+        </select>
+
       </div>
+
+      <select
+  className="border p-3 rounded"
+  value={sortBy}
+  onChange={(e) => setSortBy(e.target.value)}
+>
+  <option value="">Sort By</option>
+  <option value="newest">Newest</option>
+  <option value="price_low">Price: Low to High</option>
+  <option value="price_high">Price: High to Low</option>
+</select>
+
+
+      <button
+        onClick={() => applyFilters()}
+        className="bg-emerald-600 text-white px-6 py-3 rounded-lg mb-10"
+      >
+        Apply Filters
+      </button>
+
+      {/* Display List */}
+     <PropertyList properties={paginatedProperties} />
+
     </div>
   );
-};
-
-export default Properties;
+}
