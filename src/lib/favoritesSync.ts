@@ -1,17 +1,21 @@
-import { supabase } from "./supabaseClient";
-import { getFavorites, toggleFavorite } from "./favorites";
+ import { supabase } from "./supabaseClient";
+import { getFavorites, clearFavorites } from "./favorites";
 
 export async function syncFavoritesOnLogin(userId: string) {
-  const local = getFavorites();
+  const localFavorites = getFavorites();
 
-  if (local.length === 0) return;
+  if (localFavorites.length === 0) return;
 
-  const rows = local.map(property_id => ({
+  const rows = localFavorites.map((propertyId: string) => ({
     user_id: userId,
-    property_id
+    property_id: propertyId
   }));
 
-  await supabase.from("favorites").upsert(rows);
+  await supabase.from("favorites").upsert(rows, {
+    onConflict: "user_id,property_id"
+  });
+
+  clearFavorites();
 }
 
 export async function fetchFavoritesFromSupabase(userId: string) {
@@ -20,5 +24,5 @@ export async function fetchFavoritesFromSupabase(userId: string) {
     .select("property_id")
     .eq("user_id", userId);
 
-  return data?.map(f => f.property_id) || [];
+  return data ? data.map(r => r.property_id) : [];
 }

@@ -1,23 +1,22 @@
-
 const KEY = "homely_favorites";
 
 export function getFavorites(): string[] {
   return JSON.parse(localStorage.getItem(KEY) || "[]");
 }
 
-export function toggleFavorite(id: string): string[] {
+export function toggleFavorite(propertyId: string): string[] {
   let favorites = getFavorites();
 
-  if (favorites.includes(id)) {
-    favorites = favorites.filter(f => f !== id);
+  if (favorites.includes(propertyId)) {
+    favorites = favorites.filter(id => id !== propertyId);
   } else {
-    favorites.push(id);
+    favorites.push(propertyId);
   }
 
   localStorage.setItem(KEY, JSON.stringify(favorites));
   return favorites;
 }
 
-export function isFavorite(id: string): boolean {
-  return getFavorites().includes(id);
+export function clearFavorites() {
+  localStorage.removeItem(KEY);
 }

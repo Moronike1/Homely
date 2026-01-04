@@ -1,49 +1,81 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react"; // requires installing lucide-react
-import logo from "../assets/Logo.png"; // Adjust the path as necessary
+import { supabase } from "../lib/supabaseClient";
+import { adminLogout } from "../lib/adminLogout";
+import logo from "../assets/Logo.png";
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [role, setRole] = useState<"admin" | "user" | null>(null);
 
-  const toggleMenu = () => setMenuOpen(!menuOpen);
+  useEffect(() => {
+    async function loadUser() {
+      const { data } = await supabase.auth.getSession();
+      const currentUser = data.session?.user || null;
+      setUser(currentUser);
+
+      if (!currentUser) {
+        setRole(null);
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", currentUser.id)
+        .single();
+
+      setRole(profile?.role || "user");
+    }
+
+    loadUser();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+      loadUser();
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   return (
-    <nav className="bg-white shadow-md">
-      <div className="fixed top-0 left-0 w-full bg-white shadow-md z-50">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2 text-2xl font-bold text-blue-600">
-  <img src={logo} alt="Homely Logo" className="h-10 w-auto hover: opacity-80 transition" />
-  
-</Link>
+    <nav className="fixed top-0 left-0 w-full bg-white shadow z-50">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <Link to="/">
+          <img src={logo} alt="Homely" className="h-10" />
+        </Link>
 
-        <div className="hidden md:flex gap-6 font-medium text-gray-700">
+        <div className="flex gap-6 items-center">
           <Link to="/">Home</Link>
           <Link to="/rent">Rent</Link>
           <Link to="/sales">Sales</Link>
           <Link to="/lease">Lease</Link>
-          <Link to="/facility-management">Facility Management</Link>
-        </div>
 
-        <div className="md:hidden">
-          <button onClick={toggleMenu}>
-            {menuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {role === "admin" && (
+            <Link
+              to="/admin-panel"
+              className="font-semibold text-red-600"
+            >
+              Admin
+            </Link>
+          )}
+
+          {!user && (
+            <>
+              <Link to="/login">Login</Link>
+              <Link to="/admin-login">Admin Login</Link>
+            </>
+          )}
+
+          {user && (
+            <button
+              onClick={adminLogout}
+              className="text-red-600 font-semibold"
+            >
+              Logout
+            </button>
+          )}
         </div>
       </div>
-      </div>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="md:hidden px-4 pb-4 space-y-2 font-medium text-gray-700">
-          <Link to="/" onClick={toggleMenu}>Home</Link><br />
-          <Link to="/rent" onClick={toggleMenu}>Rent</Link><br />
-          <Link to="/sales" onClick={toggleMenu}>Sales</Link><br />
-          <Link to="/lease" onClick={toggleMenu}>Lease</Link><br />
-          <Link to="/facility-management" onClick={toggleMenu}>Facility Management</Link>
-          <Link to="/properties" onClick={toggleMenu}>Properties</Link>
-        </div>
-      )}
     </nav>
   );
 }

@@ -3,12 +3,15 @@ import { useParams, Link } from "react-router-dom";
 import { getPropertyById } from "../api/propertyService";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+import { addRecentlyViewed } from "../lib/recentlyViewed";
+
+
+
 
 export default function PropertyDetails() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [openLightbox, setOpenLightbox] = useState(false);
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const agentNumber = "2347034609530";   // Your phone number without the "+"
@@ -23,8 +26,14 @@ export default function PropertyDetails() {
       }
 
       const data = await getPropertyById(id);
-      setProperty(data);
-      setLoading(false);
+
+if (data) {
+  setProperty(data);
+  addRecentlyViewed(data.id);
+}
+
+setLoading(false);
+
 
       // Reset main image when page loads
       setMainImageIndex(0);
@@ -32,6 +41,7 @@ export default function PropertyDetails() {
 
     load();
   }, [id]);
+
 
   if (loading) return <div className="text-center py-10">Loading...</div>;
 

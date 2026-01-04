@@ -1,64 +1,76 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminLogin() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  async function handleLogin(e) {
+  // Redirect only when session exists
+  useEffect(() => {
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        navigate("/admin-panel", { replace: true });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+    setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
 
-    if (error) {
-      setErrorMsg("Invalid login credentials");
-      return;
-    }
+    setLoading(false);
 
-    navigate("/admin-panel");
+    if (error) {
+      alert(error.message);
+    }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center px-6">
       <form
         onSubmit={handleLogin}
-        className="bg-white p-8 rounded-xl shadow-md w-96"
+        className="w-full max-w-md bg-white p-8 rounded-xl shadow"
       >
         <h1 className="text-2xl font-bold mb-6 text-center">
           Admin Login
         </h1>
 
-        {errorMsg && (
-          <p className="text-red-600 text-center mb-3">{errorMsg}</p>
-        )}
-
         <input
-          className="border p-3 rounded w-full mb-4"
-          placeholder="Email"
           type="email"
+          placeholder="Email"
+          className="border p-3 rounded w-full mb-4"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
+          required
         />
 
         <input
-          className="border p-3 rounded w-full mb-6"
-          placeholder="Password"
           type="password"
+          placeholder="Password"
+          className="border p-3 rounded w-full mb-6"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
+          required
         />
 
         <button
           type="submit"
-          className="w-full bg-emerald-600 text-white p-3 rounded-lg text-lg font-semibold"
+          disabled={loading}
+          className="w-full bg-emerald-600 text-white p-3 rounded-lg disabled:opacity-60"
         >
-          Login
+          {loading ? "Signing in..." : "Login"}
         </button>
       </form>
     </div>

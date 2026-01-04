@@ -1,47 +1,53 @@
 import { supabase } from "../lib/supabaseClient";
 
-export interface Property {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  location: string;
-  type: string;
-  status: string;
-  image?: string;
-  gallery?: string[];
-  agent_name?: string;
-  agent_phone?: string;
-  agent_whatsapp?: string;
-}
+/**
+ * Public: only published properties
+ */
+export async function getProperties() {
+  const { data, error } = await supabase
+    .from("properties")
+    .select("*")
+    .eq("status", "published");
 
-// Fetch all properties
-export const getProperties = async (): Promise<Property[]> => {
-  const { data, error } = await supabase.from("properties").select("*");
   if (error) {
-    console.error("Error fetching properties:", error.message);
+    console.error(error);
     return [];
   }
+
   return data || [];
-};
+}
 
-// Fetch single property by ID
-export const getPropertyById = async (id: string): Promise<Property | null> => {
-  try {
-    const { data, error } = await supabase
-      .from("properties")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
+/**
+ * Public: single published property
+ */
+export async function getPropertyById(id: string) {
+  const { data, error } = await supabase
+    .from("properties")
+    .select("*")
+    .eq("id", id)
+    .eq("status", "published")
+    .single();
 
-    if (error) {
-      console.error("Error fetching property by ID:", error.message);
-      return null;
-    }
-
-    return data;
-  } catch (err) {
-    console.error("Unexpected error fetching property:", err);
+  if (error) {
+    console.error(error);
     return null;
   }
-};
+
+  return data;
+}
+
+/**
+ * Admin: fetch all properties
+ */
+export async function getAllPropertiesAdmin() {
+  const { data, error } = await supabase
+    .from("properties")
+    .select("*");
+
+  if (error) {
+    console.error(error);
+    return [];
+  }
+
+  return data || [];
+}
