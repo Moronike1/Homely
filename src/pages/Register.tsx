@@ -33,7 +33,9 @@ export default function Register() {
     }
 
     setLoading(false);
-    navigate("/login");
+   alert("Check your email to confirm your account before logging in.");
+   navigate("/login");
+
   }
 
   return (

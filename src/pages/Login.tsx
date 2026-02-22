@@ -8,29 +8,36 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
+  async function handleLogin(e: React.FormEvent) {
+  e.preventDefault();
+  setLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
 
-    setLoading(false);
+  setLoading(false);
 
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    navigate("/admin-panel", {replace: true});
+  if (error) {
+    alert(error.message);
+    return;
   }
+
+  if (!data.user?.email_confirmed_at) {
+    await supabase.auth.signOut();
+    alert("Please verify your email before logging in.");
+    return;
+  }
+
+  setTimeout(() => navigate("/"), 200);
+
+}
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleLogin}
         className="w-full max-w-md bg-white p-8 rounded-xl shadow"
       >
         <h1 className="text-2xl font-bold mb-6 text-center">

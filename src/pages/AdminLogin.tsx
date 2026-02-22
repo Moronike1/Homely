@@ -1,25 +1,25 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function AdminLogin() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
-  // Redirect only when session exists
   useEffect(() => {
-    const {
-      data: { subscription }
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        navigate("/admin-panel", { replace: true });
-      }
-    });
+  if (!user) return;
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+  if (user.email === "moronikeoluwafemi@gmail.com") {
+    navigate("/admin-panel", { replace: true });
+  } else {
+    navigate("/", { replace: true });
+  }
+}, [user, navigate]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -30,11 +30,12 @@ export default function AdminLogin() {
       password
     });
 
-    setLoading(false);
-
+     setLoading(false);
+     
     if (error) {
       alert(error.message);
     }
+
   }
 
   return (
@@ -68,7 +69,7 @@ export default function AdminLogin() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-emerald-600 text-white p-3 rounded-lg disabled:opacity-60"
+          className="w-full bg-emerald-600 text-white p-3 rounded-lg"
         >
           {loading ? "Signing in..." : "Login"}
         </button>

@@ -19,6 +19,7 @@ import Properties from "./pages/Properties";
 import PropertyDetails from "./components/PropertyDetails";
 import AdminPanel from "./pages/AdminPanel";
 import AdminLogin from "./pages/AdminLogin";
+import AdminRoute from "./routes/AdminRoute";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -72,6 +73,8 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="/admin-panel" element={<AdminPanel />} />
+           
+
           </Routes>
         </main>
 
@@ -84,5 +87,5 @@ function App() {
     </BrowserRouter>
   );
 }
-
+console.log("App rendered")
 export default App;
