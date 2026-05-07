@@ -30,14 +30,10 @@ export default function Properties() {
     loadProperties();
   }, []);
 
-  async function loadProperties() {
-    const { data, error } = await supabase.from("properties").select("*");
+ async function loadProperties() { const { data, error } = await supabase .from("properties") .select("*") .eq("is_published", true) .eq("status", "available") .order("created_at", { ascending: false });
+if (!error && data) { setAllProperties(data); applyFilters(data, searchQuery); } }
 
-    if (!error) {
-      setAllProperties(data);
-      applyFilters(data, searchQuery);
-    }
-  }
+console.log("Publish update result", data, error);
 
 
   function applyFilters(source = allProperties, searchTerm = searchQuery) {

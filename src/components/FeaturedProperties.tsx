@@ -19,10 +19,13 @@ export default function FeaturedProperties() {
     async function loadFeatured() {
       try {
         const { data, error } = await supabase
-          .from("properties")
-          .select("id, title, price, location, gallery, image")
-          .eq("is_featured", true)
-          .limit(6);
+        
+  .from("properties")
+  .select("*")
+  .eq("is_published", true)
+  .eq("status", "available")
+  .eq("is_featured", true);
+
 
         if (error) {
           console.error("Featured fetch error:", error);

@@ -31,25 +31,6 @@ import FloatingCall from "./components/FloatingCall";
 import FloatingEmail from "./components/FloatingEmail";
 
 function App() {
-  useEffect(() => {
-    const {
-      data: { subscription }
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        await syncFavoritesOnLogin(session.user.id);
-
-        const serverFavorites =
-          await fetchFavoritesFromSupabase(session.user.id);
-
-        localStorage.setItem(
-          "homely_favorites",
-          JSON.stringify(serverFavorites)
-        );
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   return (
     <BrowserRouter>
